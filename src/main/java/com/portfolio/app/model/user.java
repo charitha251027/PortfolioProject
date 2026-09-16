@@ -1,4 +1,8 @@
+
 package com.portfolio.app.model;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class User {
 
@@ -6,10 +10,15 @@ public class User {
     private String name;
     private String email;
 
+    private List<Holding> holdings;
+
     public User(String Userid, String name, String email) {
+
         this.Userid = Userid;
         this.name = name;
         this.email = email;
+
+        holdings = new ArrayList<>();
     }
 
     public String getUserid() {
@@ -35,4 +44,19 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public void addHolding(Holding holding) {
+        holdings.add(holding);
+    }
+
+    public List<Holding> getHoldings() {
+        return holdings;
+    }
+
+    public void display() {
+        System.out.println("User ID: " + Userid);
+        System.out.println("Name: " + name);
+        System.out.println("Email: " + email);
+    }
 }
+ 
