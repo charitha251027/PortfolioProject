@@ -1,19 +1,19 @@
- package com.portfolio.app.app;
+package com.portfolio.app.app;
 
-import com.portfolio.app.model.User;
-import com.portfolio.app.model.Stock;
-import com.portfolio.app.model.MutualFund;
-import com.portfolio.app.model.Holding;
+import com.portfolio.app.model.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
 
+    // Store all users using User ID as the key
+    static Map<String, User> users = new HashMap<>();
+
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-
-        User user = null;
 
         int choice;
 
@@ -38,6 +38,9 @@ public class Main {
 
             switch (choice) {
 
+                // =========================================
+                // CASE 1: CREATE USER
+                // =========================================
                 case 1:
 
                     System.out.println("\n--- Create User ---");
@@ -51,20 +54,35 @@ public class Main {
                     System.out.print("Enter Email: ");
                     String email = sc.nextLine();
 
-                    user = new User(userid, name, email);
+                    User newUser = new User(userid, name, email);
+
+                    users.put(userid, newUser);
 
                     System.out.println("User created successfully!");
 
                     break;
 
+                // =========================================
+                // CASE 2: ADD STOCK HOLDING
+                // =========================================
                 case 2:
 
-                    if (user == null) {
+                    if (users.isEmpty()) {
                         System.out.println("Please create a user first.");
                         break;
                     }
 
                     System.out.println("\n--- Add Stock Holding ---");
+
+                    System.out.print("Enter User ID: ");
+                    String stockUserId = sc.nextLine();
+
+                    User stockUser = findUser(stockUserId);
+
+                    if (stockUser == null) {
+                        System.out.println("User not found.");
+                        break;
+                    }
 
                     System.out.print("Enter Holding ID: ");
                     String stockHoldingId = sc.nextLine();
@@ -99,20 +117,33 @@ public class Main {
                             quantity
                     );
 
-                    user.addHolding(stockHolding);
+                    stockUser.addHolding(stockHolding);
 
                     System.out.println("Stock holding added successfully!");
 
                     break;
 
+                // =========================================
+                // CASE 3: ADD MUTUAL FUND HOLDING
+                // =========================================
                 case 3:
 
-                    if (user == null) {
+                    if (users.isEmpty()) {
                         System.out.println("Please create a user first.");
                         break;
                     }
 
                     System.out.println("\n--- Add Mutual Fund Holding ---");
+
+                    System.out.print("Enter User ID: ");
+                    String mfUserId = sc.nextLine();
+
+                    User mfUser = findUser(mfUserId);
+
+                    if (mfUser == null) {
+                        System.out.println("User not found.");
+                        break;
+                    }
 
                     System.out.print("Enter Holding ID: ");
                     String mfHoldingId = sc.nextLine();
@@ -147,48 +178,74 @@ public class Main {
                             mfQuantity
                     );
 
-                    user.addHolding(mfHolding);
+                    mfUser.addHolding(mfHolding);
 
                     System.out.println("Mutual fund holding added successfully!");
 
                     break;
 
+                // =========================================
+                // CASE 4: DISPLAY ALL USERS
+                // =========================================
                 case 4:
 
-                    if (user == null) {
+                    if (users.isEmpty()) {
 
-                        System.out.println("No user created.");
+                        System.out.println("No users created.");
 
                     } else {
 
                         System.out.println("\n--- User Details ---");
-                        user.display();
-                    }
 
-                    break;
+                        for (User user : users.values()) {
 
-                case 5:
+                            user.display();
 
-                    if (user == null) {
-                        System.out.println("Please create a user first.");
-                        break;
-                    }
-
-                    System.out.println("\n--- Holdings ---");
-
-                    if (user.getHoldings().isEmpty()) {
-
-                        System.out.println("No holdings available.");
-
-                    } else {
-
-                        for (Holding holding : user.getHoldings()) {
-                            System.out.println(holding);
+                            System.out.println("====================================");
                         }
                     }
 
                     break;
 
+                // =========================================
+                // CASE 5: DISPLAY ALL HOLDINGS USER-WISE
+                // =========================================
+                case 5:
+
+                    if (users.isEmpty()) {
+
+                        System.out.println("No users created.");
+
+                        break;
+                    }
+
+                    System.out.println("\n--- Holdings ---");
+
+                    for (User user : users.values()) {
+
+                        System.out.println("\nUser ID: " + user.getUserid());
+                        System.out.println("User Name: " + user.getName());
+
+                        if (user.getHoldings().isEmpty()) {
+
+                            System.out.println("No holdings available.");
+
+                        } else {
+
+                            for (Holding holding : user.getHoldings()) {
+
+                                System.out.println(holding);
+                            }
+                        }
+
+                        System.out.println("----------------------------");
+                    }
+
+                    break;
+
+                // =========================================
+                // CASE 6: EXIT
+                // =========================================
                 case 6:
 
                     System.out.println(
@@ -207,5 +264,14 @@ public class Main {
         } while (choice != 6);
 
         sc.close();
+    }
+
+    // =========================================
+    // FIND USER BY USER ID
+    // =========================================
+
+    public static User findUser(String userid) {
+
+        return users.get(userid);
     }
 }
